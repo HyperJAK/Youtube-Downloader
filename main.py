@@ -4,8 +4,8 @@ import tkinter as tk
 from tkinter import messagebox, filedialog
 import os
 import configparser
-import youtubeApiLegit as yt_lg
-
+import YoutubeAPI
+from YoutubeAPI import YoutubeAPI #From (filename) import (class name)
 def choose_local_path():
         local_path = filedialog.askdirectory()
         
@@ -155,11 +155,13 @@ def main():
    except Exception:
       print("Error downloading")
       #download_path = os.path.join(os.path.expanduser('~'), 'Downloads') #Default is to Downloads folder
-   
-
+      
+      
+   #Creating an object of the YoutubeAPI class
+   youtube_class = YoutubeAPI(api_key)
 #Checks if the link is of a playlist or not
    try:
-      playlist_id = yt_lg.get_playList_id(vid_url)
+      playlist_id = youtube_class.get_playList_id(vid_url)
       
       if playlist_id == False:
          is_playlist = False
@@ -168,6 +170,7 @@ def main():
       
    except Exception:
       pass
+   
    
    #In this case thumbnails are downloaded using youtubeapi
    if download_type == 'audio' and is_playlist == True:
@@ -263,13 +266,13 @@ def main():
          # download the image and save it to a file
          urllib.request.urlretrieve(url, 'image2.jpg')
          
-      
-         ydl.download([vid_url])
+         youtube_class.get_video_length('vyOlQjiLCVk')
+
+         #ydl.download([vid_url])
    
 
       
-     
-      
+         
       
 
 def clear_program_cache():
