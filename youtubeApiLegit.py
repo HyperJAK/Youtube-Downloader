@@ -47,11 +47,12 @@ def get_playlist_thumbnails(playlist_url, max_results, api_key):
     for item in playlist_items['items']:
         video_title = item['snippet']['title']
         
-        
         if 'maxres' in item['snippet']['thumbnails']:
             thumbnail_url = item['snippet']['thumbnails']['maxres']['url']
         elif 'high' in item['snippet']['thumbnails']:
             thumbnail_url = item['snippet']['thumbnails']['high']['url']
+        
+        
         
         
         print(f'Title: {video_title}')

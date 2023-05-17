@@ -24,41 +24,55 @@ def set_audio_format(new_format):
 def set_threads(new_threads):
    pass
 
+def set_path(new_path):
+   config_file = 'app_config.ini'
+
+   # create ConfigParser object to read/write configuration file
+   config_parser = configparser.ConfigParser()
+   
+   if os.path.exists(config_file):
+      config_parser.read(config_file)
+   
+      # Modify the value
+   config_parser.set('Settings', 'path', new_path)
+
+   # Write the changes back to the file
+   with open('app_config.ini', 'w') as config_file:
+      config_parser.write(config_file)
+   
+      
 
 def get_user_specified_path(config):
    # add the Settings section to the configuration file if it doesn't exist
-   if 'settings' not in config:
-    config.add_section('settings')
+   if 'Settings' not in config:
+    config.add_section('Settings')
 
    # get the saved path from the configuration file, or prompt the user to choose a new path
-   if 'path' in config['settings'] and len(config['settings']['path']) > 3:
-      path = config['settings']['path']
+   if 'path' in config['Settings'] and len(config['Settings']['path']) > 3:
+      path = config['Settings']['path']
    else:
       path = choose_local_path()
-      config['settings']['path'] = path
-      with open(config, 'w') as f:
-         config.write(f)
+      set_path(path)
    
-
    
    return path
 
 
 def get_threads(config):
 
-   return config['settings']['threads']
+   return config['Settings']['threads']
 
 def get_server_location(config):
 
-   return config['settings']['server_location']
+   return config['Settings']['server_location']
 
 def get_playlist_max_downloads(config):
 
-   return config['settings']['playlist']
+   return config['Settings']['playlist']
 
 def get_audio_format(config):
 
-   return config['settings']['audio_format']
+   return config['Settings']['audio_format']
 
 def get_api_key():
    api_file = 'api_key.ini'
@@ -73,12 +87,12 @@ def get_api_key():
    return api_parser['api']['key']
 
 def get_download_type(config):
-   return config['settings']['download_type']
+   return config['Settings']['download_type']
 
 
 
 def get_all_configs():
-   config_file = 'config.ini'
+   config_file = 'app_config.ini'
 
    # create ConfigParser object to read/write configuration file
    config_parser = configparser.ConfigParser()
@@ -86,6 +100,16 @@ def get_all_configs():
    # check if the configuration file exists and read it if it does
    if os.path.exists(config_file):
       config_parser.read(config_file)
+   else:
+      config_parser['Settings'] = {'path': '',
+                              'threads': '5',
+                              'audio_format': 'm4a',
+                              'video_format': 'mp4',
+                              'playlist': '10',
+                              'server_location': 'FR',
+                              'download_type': 'audio'}
+      
+      config_parser.write(open("app_config.ini","w"))
       
       
    path = get_user_specified_path(config_parser)
@@ -99,11 +123,29 @@ def get_all_configs():
    return path, threads, server_loc, playlist_downloads, audio_format, api_key, download_type
 
 
+def show_window():
+   pass 
 
-def main():      
-        
 
-   vid_url = "https://youtu.be/HLEMQgCzxd4"
+
+def scanpath_length(path):
+   counter = 0
+   
+   
+   for path in os.scandir(path): 
+      if path.is_file():
+         counter += 1
+               
+   return counter
+
+
+
+def main():     
+   #Get playlist name and name the new folder that the playlist will be put in as that name 
+        #TO DOWNLOAD IMP 
+       # https://www.youtube.com/watch?v=tnM2-fg1ujQ&list=RDtnM2-fg1ujQ&start_radio=1
+
+   vid_url = 'https://youtu.be/vyOlQjiLCVk'
    is_playlist = False
    
    try:
@@ -137,7 +179,7 @@ def main():
             'preferredcodec': audio_format,
             'preferredquality': quality
          }],
-         'outtmpl': download_path + '/%(title)s.%(ext)s', #Download path
+         'outtmpl': download_path + f'/{str(scanpath_length(download_path) + 1)}-%(title)s.%(ext)s', #Download path
          'quiet': False,
          'forcetitle': True,
          'verbose': False,
@@ -160,7 +202,7 @@ def main():
             'preferredcodec': audio_format,
             'preferredquality': quality
          }],
-         'outtmpl': download_path + '/%(title)s.%(ext)s', #Download path
+         'outtmpl': download_path + '/' + str(scanpath_length(download_path) + 1) +'-%(title)s.%(ext)s', #Download path
          'quiet': False,
          'forcetitle': True,
          'verbose': False,
@@ -193,7 +235,7 @@ def main():
    elif download_type == 'video' and is_playlist == False:
       ydl_opts = {
          'format': 'bestvideo[height<=1080]+bestaudio/best[abr>128]',
-         'outtmpl': download_path + '/%(title)s.%(ext)s', # Download path
+         'outtmpl': download_path + '/' + str(scanpath_length(download_path) + 1) +'-%(title)s.%(ext)s', # Download path
          'quiet': False,
          'forcetitle': True,
          'verbose': False,
@@ -221,9 +263,8 @@ def main():
          # download the image and save it to a file
          urllib.request.urlretrieve(url, 'image2.jpg')
          
-         
       
-      ydl.download([vid_url])
+         ydl.download([vid_url])
    
 
       
