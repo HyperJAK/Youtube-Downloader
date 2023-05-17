@@ -266,7 +266,7 @@ def main():
          # download the image and save it to a file
          urllib.request.urlretrieve(url, 'image2.jpg')
          
-         youtube_class.get_video_length('vyOlQjiLCVk')
+         youtube_class.get_video_length('https://youtu.be/slVB9FK6Ttc')
 
          #ydl.download([vid_url])
    

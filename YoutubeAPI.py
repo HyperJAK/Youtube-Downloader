@@ -1,4 +1,5 @@
 import googleapiclient.discovery
+from pytube import YouTube
 
 class YoutubeAPI:
    
@@ -39,17 +40,23 @@ class YoutubeAPI:
       return concat_string  
       
    
+
+   def convert_to_readable(self, secounds):
+      pass
    
    
-   def get_video_length(self, vid_id):
-      video_info = self.youtube.videos().list(
-         part='snippet',
-         id=vid_id,
-      ).execute()
-      
-      vid_length = (video_info['contentDetails']['duration'])
-         
-      print(f"This video length is {vid_length}")
+   
+   def get_video_length(self, video_url):
+      # Create a YouTube object
+      yt = YouTube(video_url)
+
+      # Get the duration of the video in seconds
+      duration_seconds = yt.length
+
+      # Convert the duration to a more readable format (e.g., HH:MM:SS)
+      formatted_duration = str(self.convert_to_readable(duration_seconds))
+
+      print(f"This video duration is {duration_seconds}")
     
     
    
