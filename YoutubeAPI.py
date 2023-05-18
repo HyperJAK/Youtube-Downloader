@@ -22,7 +22,7 @@ class YoutubeAPI:
    
    
    
-   def get_playList_id(self, playlist_url):
+   def is_playlist(self, playlist_url):
       string_length = len(playlist_url)
       concat_string = ''
       
@@ -30,16 +30,19 @@ class YoutubeAPI:
          concat_string = playlist_url[i:i+5]
 
          if concat_string == 'list=':
-               concat_string = playlist_url[i+5:string_length]
-               break
+              # concat_string = playlist_url[i+5:string_length]
+              return True
+               
          else:
                concat_string = ''
                if i+5 == string_length:
                   return False
       
-      return concat_string  
       
-   
+  
+      
+      
+      
 
    def convert_to_readable(self, secounds):
       pass
@@ -59,15 +62,32 @@ class YoutubeAPI:
       print(f"This video duration is {duration_seconds}")
     
     
-   
-   
-      
-      
-   
-   def get_playlist_thumbnails(self, playlist_url, max_results):
-
+    
+   def get_playlist_info(self, playlist_url):
       # Specify the playlist ID
       playlist_id = self.get_playList_id(playlist_url)
+
+   
+    
+   def get_playlist_id(self, playlist_url):
+   
+      # Retrieve the playlist items
+      playlist_id = self.youtube.playlistItems().list(
+         part='id',
+         playlist_url=playlist_url,
+      ).execute()
+      
+      return playlist_id
+   
+   
+   
+   
+   
+   def get_playlist_title(self, playlist_url):
+      pass
+      
+   
+   def get_playlist_thumbnails(self, playlist_id, max_results):
 
       # Retrieve the playlist items
       playlist_items = self.youtube.playlistItems().list(

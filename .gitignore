@@ -2,3 +2,5 @@ api_key.txt
 config.ini
 image.jpg
 image2.jpg
+dist/
+build/

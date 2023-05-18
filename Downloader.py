@@ -1,13 +1,14 @@
 import youtube_dl
 import urllib.request
-import tkinter as tk
-from tkinter import messagebox, filedialog
+from tkinter import filedialog
 import os
 import configparser
 import YoutubeAPI
 from YoutubeAPI import YoutubeAPI #From (filename) import (class name)
+import pyperclip
 
 #Global variables:
+vid_url = ''
 download_path = ''
 threads = ''
 playlist_downloads = ''
@@ -203,13 +204,17 @@ def scanpath_length(path):
    return counter
 
 
+def paste_url():
+   global vid_url
+   vid_url = pyperclip.paste()
+   run_downloader()
 
-def main():     
+
+def run_downloader():     
    #Get playlist name and name the new folder that the playlist will be put in as that name 
         #TO DOWNLOAD IMP 
        # https://www.youtube.com/watch?v=tnM2-fg1ujQ&list=RDtnM2-fg1ujQ&start_radio=1
 
-   vid_url = 'https://youtu.be/hRok6zPZKMA'
    is_playlist = False
    
    try:
@@ -220,20 +225,15 @@ def main():
       print("Error downloading")
       #download_path = os.path.join(os.path.expanduser('~'), 'Downloads') #Default is to Downloads folder
       
-      
+   print(api_key)
    #Creating an object of the YoutubeAPI class
    youtube_class = YoutubeAPI(api_key)
 #Checks if the link is of a playlist or not
    try:
-      playlist_id = youtube_class.get_playList_id(vid_url)
-      
-      if playlist_id == False:
-         is_playlist = False
-      else:
-         is_playlist = True
+      is_playlist = youtube_class.is_playlist(vid_url)
       
    except Exception:
-      pass
+      print("couldnt check if api or not")
    
    
    #In this case thumbnails are downloaded using youtubeapi
@@ -246,8 +246,9 @@ def main():
             'preferredcodec': audio_format,
             'preferredquality': quality
          }],
-         'outtmpl': download_path + f'/{str(scanpath_length(download_path) + 1)}-%(title)s.%(ext)s', #Download path
+         'outtmpl': download_path + '/%(playlist_index)s-%(title)s.%(ext)s', #Download path
          'quiet': False,
+         'no_mtime': True,
          'forcetitle': True,
          'verbose': False,
          'forcethumbnail': False,
@@ -271,6 +272,7 @@ def main():
          }],
          'outtmpl': download_path + '/' + str(scanpath_length(download_path) + 1) +'-%(title)s.%(ext)s', #Download path
          'quiet': False,
+         'no_mtime': True,
          'forcetitle': True,
          'verbose': False,
          'forcethumbnail': True,
@@ -286,8 +288,9 @@ def main():
    elif download_type == 'video' and is_playlist == True:
       ydl_opts = {
          'format': 'bestvideo[height<=1080]+bestaudio/best[abr>128]',
-         'outtmpl': download_path + '/%(title)s.%(ext)s', # Download path
+         'outtmpl': download_path + '/%(playlist_index)s-%(title)s.%(ext)s', # Download path
          'quiet': False,
+         'no_mtime': True,
          'forcetitle': True,
          'verbose': False,
          'forcethumbnail': False,
@@ -304,6 +307,7 @@ def main():
          'format': 'bestvideo[height<=1080]+bestaudio/best[abr>128]',
          'outtmpl': download_path + '/' + str(scanpath_length(download_path) + 1) +'-%(title)s.%(ext)s', # Download path
          'quiet': False,
+         'no_mtime': True,
          'forcetitle': True,
          'verbose': False,
          'forcethumbnail': True,
@@ -332,7 +336,8 @@ def main():
          
          youtube_class.get_video_length(vid_url)
 
-         #ydl.download([vid_url])
+      ydl.download([vid_url])
+      print("Done downloading")
    
 
       
@@ -354,4 +359,4 @@ def clear_program_cache():
 
 #if file name is called main or contails main i think
 if __name__ == "__main__":
-    main()
+    run_downloader()

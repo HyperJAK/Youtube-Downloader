@@ -21,3 +21,5 @@ Get API from: https://console.cloud.google.com/apis/api/youtube.googleapis.com
 
 
 Uses 3 main API's, youtube-dl to download everything / YoutubeAPI official, to view some info / pytube to get duration of videos
+
+!!Need to fix app doesnt download when running as exe and not from ide (Might want to refrein from using official youtube api and use pytube)
