@@ -6,23 +6,74 @@ import os
 import configparser
 import YoutubeAPI
 from YoutubeAPI import YoutubeAPI #From (filename) import (class name)
-def choose_local_path():
-        local_path = filedialog.askdirectory()
-        
-        return local_path
+
+
+
      
      
 def set_server_location(new_location):
-   pass
+   config_file = 'app_config.ini'
+
+   # create ConfigParser object to read/write configuration file
+   config_parser = configparser.ConfigParser()
+   
+   if os.path.exists(config_file):
+      config_parser.read(config_file)
+   
+      # Modify the value
+   config_parser.set('Settings', 'server_location', new_location)
+
+   # Write the changes back to the file
+   with open('app_config.ini', 'w') as config_file:
+      config_parser.write(config_file)
 
 def set_playlist_max_downloads(new_max):
-   pass
+   config_file = 'app_config.ini'
+
+   # create ConfigParser object to read/write configuration file
+   config_parser = configparser.ConfigParser()
+   
+   if os.path.exists(config_file):
+      config_parser.read(config_file)
+   
+      # Modify the value
+   config_parser.set('Settings', 'playlist', new_max)
+
+   # Write the changes back to the file
+   with open('app_config.ini', 'w') as config_file:
+      config_parser.write(config_file)
 
 def set_audio_format(new_format):
-   pass
+   config_file = 'app_config.ini'
+
+   # create ConfigParser object to read/write configuration file
+   config_parser = configparser.ConfigParser()
+   
+   if os.path.exists(config_file):
+      config_parser.read(config_file)
+   
+      # Modify the value
+   config_parser.set('Settings', 'audio_format', new_format)
+
+   # Write the changes back to the file
+   with open('app_config.ini', 'w') as config_file:
+      config_parser.write(config_file)
 
 def set_threads(new_threads):
-   pass
+   config_file = 'app_config.ini'
+
+   # create ConfigParser object to read/write configuration file
+   config_parser = configparser.ConfigParser()
+   
+   if os.path.exists(config_file):
+      config_parser.read(config_file)
+   
+      # Modify the value
+   config_parser.set('Settings', 'threads', new_threads)
+
+   # Write the changes back to the file
+   with open('app_config.ini', 'w') as config_file:
+      config_parser.write(config_file)
 
 def set_path(new_path):
    config_file = 'app_config.ini'
@@ -40,7 +91,12 @@ def set_path(new_path):
    with open('app_config.ini', 'w') as config_file:
       config_parser.write(config_file)
    
-      
+
+def choose_local_path():
+        local_path = filedialog.askdirectory()
+        
+        return local_path
+         
 
 def get_user_specified_path(config):
    # add the Settings section to the configuration file if it doesn't exist
@@ -145,7 +201,7 @@ def main():
         #TO DOWNLOAD IMP 
        # https://www.youtube.com/watch?v=tnM2-fg1ujQ&list=RDtnM2-fg1ujQ&start_radio=1
 
-   vid_url = 'https://youtu.be/vyOlQjiLCVk'
+   vid_url = 'https://youtu.be/hRok6zPZKMA'
    is_playlist = False
    
    try:
@@ -266,9 +322,9 @@ def main():
          # download the image and save it to a file
          urllib.request.urlretrieve(url, 'image2.jpg')
          
-         youtube_class.get_video_length('https://youtu.be/slVB9FK6Ttc')
+         youtube_class.get_video_length(vid_url)
 
-         #ydl.download([vid_url])
+         ydl.download([vid_url])
    
 
       
