@@ -7,7 +7,14 @@ import configparser
 import YoutubeAPI
 from YoutubeAPI import YoutubeAPI #From (filename) import (class name)
 
-
+#Global variables:
+download_path = ''
+threads = ''
+playlist_downloads = ''
+audio_format = ''
+server_loc = ''
+api_key = ''
+download_type = ''
 
      
      
@@ -167,8 +174,9 @@ def get_all_configs():
       
       config_parser.write(open("app_config.ini","w"))
       
+   global download_path, threads, playlist_downloads, audio_format, server_loc, api_key, download_type
       
-   path = get_user_specified_path(config_parser)
+   download_path = get_user_specified_path(config_parser)
    threads = get_threads(config_parser)
    playlist_downloads = get_playlist_max_downloads(config_parser)
    audio_format = get_audio_format(config_parser)
@@ -176,7 +184,7 @@ def get_all_configs():
    api_key = get_api_key()
    download_type = get_download_type(config_parser)
    
-   return path, threads, server_loc, playlist_downloads, audio_format, api_key, download_type
+   return True
 
 
 def show_window():
@@ -205,8 +213,8 @@ def main():
    is_playlist = False
    
    try:
-      #This gets all settings from config file
-      download_path, threads, server_loc, playlist_downloads, audio_format, api_key, download_type = get_all_configs()
+      #This gets all settings from config file and stores them in the global variables
+      get_all_configs()
       quality = "320"
    except Exception:
       print("Error downloading")
@@ -324,7 +332,7 @@ def main():
          
          youtube_class.get_video_length(vid_url)
 
-         ydl.download([vid_url])
+         #ydl.download([vid_url])
    
 
       
