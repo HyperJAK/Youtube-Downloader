@@ -5,7 +5,7 @@ import os
 import configparser
 import pyperclip
 
-console_app = True
+console_app = False
 
 if console_app == False:
    sys.stdout = open(os.devnull, 'w')
