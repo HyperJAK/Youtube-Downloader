@@ -23,6 +23,7 @@ def relative_to_assets(path: str) -> Path:
 
 
 def download():
+    Downloader.get_all_configs()
     Downloader.paste_url()
 
 
