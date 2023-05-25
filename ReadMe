@@ -1,27 +1,16 @@
+This project uses the youtube-dl library (https://github.com/ytdl-org/youtube-dl),
+which is licensed under the Unlicense (https://unlicense.org/).
+
 Steps to take to make app:
 - List of all features: -Download videos
-- Download Audios
 - Choose audio quality and video quality
 - Open a folder that contains files and play them
 - Save the folder paths so that on app relaunch i see them in app ready to play
 - Show option to download all playlist if a video link has list=somerandomnumbers in it
-- Give user option to change api key from settings
-- Make app dark mode option 
 - Add error messages that popup based on the try catch error so that the user knows exectly what is the problem
 - Add the ability to check video if its in a playlist or not and based on that as kuser if he wants to download video only or all playlist
--Display video length and quality and size before downloading and ofc as kuser to confirm the start of the download
+- Display video length and quality and size before downloading and ofc as kuser to confirm the start of the download
 - To download playlists we just need to use the other python package to check for playlist id of the vid and then get id's of all vids in the playlist and then append the id's to https://youtu.be/(id goes here) and then download them all
 - Add with every downloaded video or audio its thumbnail and name and other info in a new folder so then i can use it in the video player as a background
 - Check wether youtube vid is unavailable before downloading and handling that
 - Change so that file numbering is based on previous numbers not on amount of files
-
-
-Make the app design on figma
-
-
-Get API from: https://console.cloud.google.com/apis/api/youtube.googleapis.com
-
-
-Uses 3 main API's, youtube-dl to download everything / YoutubeAPI official, to view some info / pytube to get duration of videos
-
-!!Need to fix app doesnt download when running as exe and not from ide (Might want to refrein from using official youtube api and use pytube)
