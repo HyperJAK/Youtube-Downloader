@@ -12,9 +12,16 @@ Steps to take to make app:
 -Display video length and quality and size before downloading and ofc as kuser to confirm the start of the download
 - To download playlists we just need to use the other python package to check for playlist id of the vid and then get id's of all vids in the playlist and then append the id's to https://youtu.be/(id goes here) and then download them all
 - Add with every downloaded video or audio its thumbnail and name and other info in a new folder so then i can use it in the video player as a background
+- Check wether youtube vid is unavailable before downloading and handling that
+- Change so that file numbering is based on previous numbers not on amount of files
 
 
 Make the app design on figma
 
 
 Get API from: https://console.cloud.google.com/apis/api/youtube.googleapis.com
+
+
+Uses 3 main API's, youtube-dl to download everything / YoutubeAPI official, to view some info / pytube to get duration of videos
+
+!!Need to fix app doesnt download when running as exe and not from ide (Might want to refrein from using official youtube api and use pytube)
