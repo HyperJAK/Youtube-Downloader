@@ -1,11 +1,15 @@
+import sys
 import youtube_dl
-import urllib.request
 from tkinter import filedialog
 import os
 import configparser
-import YoutubeAPI
-from YoutubeAPI import YoutubeAPI #From (filename) import (class name)
 import pyperclip
+
+console_app = True
+
+if console_app == False:
+   sys.stdout = open(os.devnull, 'w')
+   sys.stderr = open(os.devnull, 'w')
 
 #Global variables:
 vid_url = ''
@@ -16,6 +20,7 @@ audio_format = ''
 server_loc = ''
 api_key = ''
 download_type = ''
+
 
      
      
@@ -34,6 +39,8 @@ def set_server_location(new_location):
    # Write the changes back to the file
    with open('app_config.ini', 'w') as config_file:
       config_parser.write(config_file)
+      
+      
 
 def set_playlist_max_downloads(new_max):
    config_file = 'app_config.ini'
@@ -50,6 +57,8 @@ def set_playlist_max_downloads(new_max):
    # Write the changes back to the file
    with open('app_config.ini', 'w') as config_file:
       config_parser.write(config_file)
+      
+      
 
 def set_audio_format(new_format):
    config_file = 'app_config.ini'
@@ -66,6 +75,8 @@ def set_audio_format(new_format):
    # Write the changes back to the file
    with open('app_config.ini', 'w') as config_file:
       config_parser.write(config_file)
+      
+      
 
 def set_threads(new_threads):
    config_file = 'app_config.ini'
@@ -82,6 +93,8 @@ def set_threads(new_threads):
    # Write the changes back to the file
    with open('app_config.ini', 'w') as config_file:
       config_parser.write(config_file)
+      
+      
 
 def set_path(new_path):
    config_file = 'app_config.ini'
@@ -162,18 +175,18 @@ def get_all_configs():
    config_parser = configparser.ConfigParser()
 
    # check if the configuration file exists and read it if it does
-   if os.path.exists(config_file):
+   if os.path.exists(os.getcwd() + '/' + config_file):
       config_parser.read(config_file)
    else:
       config_parser['Settings'] = {'path': '',
-                              'threads': '5',
+                              'threads': '4',
                               'audio_format': 'm4a',
                               'video_format': 'mp4',
                               'playlist': '10',
                               'server_location': 'FR',
                               'download_type': 'audio'}
       
-      config_parser.write(open("app_config.ini","w"))
+      config_parser.write(open(os.getcwd() +"/app_config.ini","w"))
       
    global download_path, threads, playlist_downloads, audio_format, server_loc, api_key, download_type
       
@@ -182,7 +195,7 @@ def get_all_configs():
    playlist_downloads = get_playlist_max_downloads(config_parser)
    audio_format = get_audio_format(config_parser)
    server_loc = get_server_location(config_parser)
-   api_key = get_api_key()
+   #api_key = get_api_key()
    download_type = get_download_type(config_parser)
    
    return True
@@ -208,34 +221,93 @@ def paste_url():
    global vid_url
    vid_url = pyperclip.paste()
    run_downloader()
+   
+   
+   
+   #Gets video / playlist information
+   
+def get_video_info(vid_url):
+   with youtube_dl.YoutubeDL() as ydl:
+      info = ydl.extract_info(vid_url, download=False) #Gets all video info in a dict() format
+      
+      temp_is_playlist = is_playlist(info)
+      temp_playlist_title = ''
+      
+      if temp_is_playlist:
+         temp_playlist_title = get_playlist_title(info)
+   
+   return temp_is_playlist, temp_playlist_title
+
+
+
+def get_playlist_title(ydl_extracted_info):
+   try:
+      return ydl_extracted_info['title']
+   
+   except youtube_dl.DownloadError:
+      if console_app:
+         print("Couldnt find title")
+         
+         
+   
+
+def is_playlist(ydl_extracted_info):
+      try:
+         if 'entries' in ydl_extracted_info:
+               # Playlist
+               playlist_id = ydl_extracted_info['id']
+               if console_app:
+                  print(f"This is a playlist. Playlist ID: {playlist_id}")
+               return True
+         else:
+               # Single video
+               video_id = ydl_extracted_info['id']
+               if console_app:
+                  print(f"This is a single video. Video ID: {video_id}")
+               return False
+      except youtube_dl.DownloadError:
+         if console_app:
+            print("Invalid URL or unable to extract information.")
+
+
+
+
+def progress_hook(hook):
+   if console_app:
+      if hook['status'] == 'downloading':
+         percent = hook['_percent_str']
+         speed = hook['_speed_str']
+         eta = hook['_eta_str']
+         progress_message = f"Downloading: {percent} complete | Speed: {speed} | ETA: {eta}"
+         sys.stdout.write('\r' + progress_message)
+         sys.stdout.flush()
+      elif hook['status'] == 'finished':
+         print("\nDownload finished! Starting to process...")
+            
 
 
 def run_downloader():     
    #Get playlist name and name the new folder that the playlist will be put in as that name 
         #TO DOWNLOAD IMP 
        # https://www.youtube.com/watch?v=tnM2-fg1ujQ&list=RDtnM2-fg1ujQ&start_radio=1
-
-   is_playlist = False
-   
-   try:
-      #This gets all settings from config file and stores them in the global variables
-      get_all_configs()
-      quality = "320"
-   except Exception:
-      print("Error downloading")
-      #download_path = os.path.join(os.path.expanduser('~'), 'Downloads') #Default is to Downloads folder
-      
-   print(api_key)
-   #Creating an object of the YoutubeAPI class
-   youtube_class = YoutubeAPI(api_key)
+       # https://youtu.be/oi6sOSTFrxc
+   quality = "320"
+  
 #Checks if the link is of a playlist or not
-   try:
-      is_playlist = youtube_class.is_playlist(vid_url)
+
+   is_playlist, playlist_title = get_video_info(vid_url)
+   
+   if is_playlist:
+      global download_path
       
-   except Exception:
-      print("couldnt check if api or not")
+      if not os.path.exists(download_path + "/" + playlist_title):
+         os.chdir(download_path)
+         os.mkdir(playlist_title)
+         
+         
+      download_path = download_path + "/" + playlist_title
    
-   
+
    #In this case thumbnails are downloaded using youtubeapi
    if download_type == 'audio' and is_playlist == True:
       # Set options for audio-only download
@@ -247,9 +319,9 @@ def run_downloader():
             'preferredquality': quality
          }],
          'outtmpl': download_path + '/%(playlist_index)s-%(title)s.%(ext)s', #Download path
-         'quiet': False,
+         'quiet': True,
          'no_mtime': True,
-         'forcetitle': True,
+         'forcetitle': False,
          'verbose': False,
          'forcethumbnail': False,
          'keepvideo': False,
@@ -257,7 +329,9 @@ def run_downloader():
          'noplaylist': False,  # Download playlists
          'playlist_items':'1-'+playlist_downloads,
          'n_threads': threads,
-         'geo_bypass_country': server_loc
+         'geo_bypass_country': server_loc,
+         'ignoreerrors': True,
+         'progress_hooks': [progress_hook]
 
       }
    
@@ -271,16 +345,19 @@ def run_downloader():
             'preferredquality': quality
          }],
          'outtmpl': download_path + '/' + str(scanpath_length(download_path) + 1) +'-%(title)s.%(ext)s', #Download path
-         'quiet': False,
+         'quiet': True,
          'no_mtime': True,
-         'forcetitle': True,
+         'forcetitle': False,
          'verbose': False,
          'forcethumbnail': True,
          'keepvideo': False,
          #'restrictfilenames': True,  # only use safe characters in output filename
          'noplaylist': True,  # Download playlists
          'n_threads': threads,
-         'geo_bypass_country': server_loc
+         'ignoreerrors': True,
+         'geo_bypass_country': server_loc,
+         'progress_hooks': [progress_hook],
+         'writethumbnail': True
 
       }
    
@@ -289,16 +366,18 @@ def run_downloader():
       ydl_opts = {
          'format': 'bestvideo[height<=1080]+bestaudio/best[abr>128]',
          'outtmpl': download_path + '/%(playlist_index)s-%(title)s.%(ext)s', # Download path
-         'quiet': False,
+         'quiet': True,
          'no_mtime': True,
-         'forcetitle': True,
+         'forcetitle': False,
          'verbose': False,
          'forcethumbnail': False,
          'keepvideo': True,  # Set to True to keep the video file
          'noplaylist': False,  # Download playlists
          'playlist_items': '1-' + playlist_downloads,
          'n_threads': threads,
-         'geo_bypass_country': server_loc
+         'ignoreerrors': True,
+         'geo_bypass_country': server_loc,
+         'progress_hooks': [progress_hook]
       }
       
       #In this case thumbnails are downlaoded from youtube-dl
@@ -306,16 +385,19 @@ def run_downloader():
       ydl_opts = {
          'format': 'bestvideo[height<=1080]+bestaudio/best[abr>128]',
          'outtmpl': download_path + '/' + str(scanpath_length(download_path) + 1) +'-%(title)s.%(ext)s', # Download path
-         'quiet': False,
+         'quiet': True,
          'no_mtime': True,
-         'forcetitle': True,
+         'forcetitle': False,
          'verbose': False,
          'forcethumbnail': True,
          'keepvideo': True,  # Set to True to keep the video file
          'noplaylist': True,  # Download playlists
          'playlist_items': '1-' + playlist_downloads,
          'n_threads': threads,
-         'geo_bypass_country': server_loc
+         'ignoreerrors': True,
+         'geo_bypass_country': server_loc,
+         'progress_hooks': [progress_hook],
+         'writethumbnail': True
       }
       
 
@@ -325,22 +407,20 @@ def run_downloader():
       # Download audio-only
       
       if is_playlist == False:
-         info = ydl.extract_info(vid_url,download=False)
+         pass
+         #info = ydl.extract_info(vid_url,download=False)
       
          # specify the URL of the image
-         url = info.get('thumbnail')
-         title = info.get('title')
+         #url = info.get('thumbnail')
+         #title = info.get('title')
          
          # download the image and save it to a file
-         urllib.request.urlretrieve(url, 'image2.jpg')
+         #urllib.request.urlretrieve(url, 'image2.jpg')
          
-         youtube_class.get_video_length(vid_url)
 
       ydl.download([vid_url])
-      print("Done downloading")
-   
-
-      
+      if console_app:
+         print('Finished processing')
          
       
 

@@ -15,7 +15,7 @@ current_path = os.getcwd()
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(fr"{current_path}\assets\frame0")
-print(ASSETS_PATH)
+Downloader.get_all_configs()
 
 
 def relative_to_assets(path: str) -> Path:
@@ -25,6 +25,10 @@ def relative_to_assets(path: str) -> Path:
 def download():
     Downloader.paste_url()
 
+
+def change_path():
+    new_path = Downloader.choose_local_path()
+    Downloader.set_path(new_path)
 
 
 window = Tk()
@@ -50,7 +54,7 @@ button_1 = Button(
     image=button_image_1,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_1 clicked"),
+    #command=lambda: print("button_1 clicked"),
     relief="flat"
 )
 button_1.place(
@@ -82,7 +86,7 @@ button_3 = Button(
     image=button_image_3,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_3 clicked"),
+    command=change_path,
     relief="flat"
 )
 button_3.place(
@@ -98,7 +102,7 @@ button_4 = Button(
     image=button_image_4,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_4 clicked"),
+    #command=lambda: print("button_4 clicked"),
     relief="flat"
 )
 button_4.place(
@@ -114,7 +118,7 @@ button_5 = Button(
     image=button_image_5,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_5 clicked"),
+    #command=lambda: print("button_5 clicked"),
     relief="flat"
 )
 button_5.place(
@@ -130,7 +134,7 @@ button_6 = Button(
     image=button_image_6,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_6 clicked"),
+    #command=lambda: print("button_6 clicked"),
     relief="flat"
 )
 button_6.place(
