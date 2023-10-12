@@ -20,9 +20,25 @@ audio_format = ''
 server_loc = ''
 api_key = ''
 download_type = ''
+download_thumbnail = ''
 
 
-     
+def set_download_thumbnail(bool_value):
+   config_file = 'app_config.ini'
+
+   # create ConfigParser object to read/write configuration file
+   config_parser = configparser.ConfigParser()
+   
+   if os.path.exists(config_file):
+      config_parser.read(config_file)
+   
+      # Modify the value
+   config_parser.set('Settings', 'download_thumbnail', bool_value)
+
+   # Write the changes back to the file
+   with open('app_config.ini', 'w') as config_file:
+      config_parser.write(config_file)
+      
      
 def set_server_location(new_location):
    config_file = 'app_config.ini'
@@ -134,6 +150,9 @@ def get_user_specified_path(config):
    
    return path
 
+def get_thumbnail(config):
+   return config['settings']['download_thumbnail']
+
 
 def get_threads(config):
 
@@ -184,11 +203,12 @@ def get_all_configs():
                               'video_format': 'mp4',
                               'playlist': '10',
                               'server_location': 'FR',
-                              'download_type': 'audio'}
+                              'download_type': 'audio',
+                              'download_thumbnail': 'false'}
       
       config_parser.write(open(os.getcwd() +"/app_config.ini","w"))
       
-   global download_path, threads, playlist_downloads, audio_format, server_loc, api_key, download_type
+   global download_path, threads, playlist_downloads, audio_format, server_loc, api_key, download_type, download_thumbnail
       
    download_path = get_user_specified_path(config_parser)
    threads = get_threads(config_parser)
@@ -197,6 +217,7 @@ def get_all_configs():
    server_loc = get_server_location(config_parser)
    #api_key = get_api_key()
    download_type = get_download_type(config_parser)
+   download_thumbnail = get_thumbnail(config_parser)
    
    return True
 
@@ -307,6 +328,13 @@ def run_downloader():
          
       download_path = download_path + "/" + playlist_title
    
+   #sets the thumbnail download boolean value based on the text read from the config
+   if download_thumbnail == "true":
+      download_thumbnail = True
+      
+   else:
+      download_thumbnail = False
+   
 
    #In this case thumbnails are downloaded using youtubeapi
    if download_type == 'audio' and is_playlist == True:
@@ -349,7 +377,7 @@ def run_downloader():
          'no_mtime': True,
          'forcetitle': False,
          'verbose': False,
-         'forcethumbnail': True,
+         'forcethumbnail': download_thumbnail,
          'keepvideo': False,
          #'restrictfilenames': True,  # only use safe characters in output filename
          'noplaylist': True,  # Download playlists
@@ -389,7 +417,7 @@ def run_downloader():
          'no_mtime': True,
          'forcetitle': False,
          'verbose': False,
-         'forcethumbnail': True,
+         'forcethumbnail': download_thumbnail,
          'keepvideo': True,  # Set to True to keep the video file
          'noplaylist': True,  # Download playlists
          'playlist_items': '1-' + playlist_downloads,
