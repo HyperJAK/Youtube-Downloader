@@ -151,7 +151,7 @@ def get_user_specified_path(config):
    return path
 
 def get_thumbnail(config):
-   return config['settings']['download_thumbnail']
+   return config['Settings']['download_thumbnail']
 
 
 def get_threads(config):
@@ -263,7 +263,17 @@ def get_video_info(vid_url):
 
 def get_playlist_title(ydl_extracted_info):
    try:
-      return ydl_extracted_info['title']
+      title = ydl_extracted_info['title']
+      title = title.split(' ')
+
+      new_title = ''
+      new_title += title[0]
+
+      if len(title) > 2:
+         for i in range(len(title) - (int)(len(title) - 3)):
+            new_title += (title[i + 1])
+         
+      return new_title
    
    except youtube_dl.DownloadError:
       if console_app:
@@ -327,13 +337,15 @@ def run_downloader():
          
          
       download_path = download_path + "/" + playlist_title
-   
+      
+      #using the global value of download_thumbnail
+   global download_thumbnail
    #sets the thumbnail download boolean value based on the text read from the config
-   if download_thumbnail == "true":
-      download_thumbnail = True
+   if download_thumbnail == "false":
+      download_thumbnail = False
       
    else:
-      download_thumbnail = False
+      download_thumbnail = True
    
 
    #In this case thumbnails are downloaded using youtubeapi
@@ -434,17 +446,19 @@ def run_downloader():
    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
       # Download audio-only
       
-      if is_playlist == False:
-         pass
-         #info = ydl.extract_info(vid_url,download=False)
-      
+      #if is_playlist == False:
+         #pass
          # specify the URL of the image
          #url = info.get('thumbnail')
-         #title = info.get('title')
+         
          
          # download the image and save it to a file
          #urllib.request.urlretrieve(url, 'image2.jpg')
          
+      #getting title and shorttening it
+      #info = ydl.extract_info(vid_url,download=False)
+      #title = info.get('title')
+      
 
       ydl.download([vid_url])
       if console_app:
